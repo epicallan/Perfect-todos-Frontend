@@ -15,6 +15,7 @@ export default function Todo(props) {
     const { todo, setTodos } = props;
     const [isEditing, setIsEditing] = useState(false);
     const [editedTodo, setEditedTodo] = useState(todo.todo);
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000"
 
     const handleEdit = () => {
       setIsEditing(true);
@@ -31,16 +32,16 @@ export default function Todo(props) {
           });
         });
 
-        setIsEditing(false); 
+        setIsEditing(false);
 
-        const res = await fetch(`/api/todos/${todoId}`, {
+        const res = await fetch(`${backendUrl}/api/todos/${todoId}`, {
           method: "PUT",
           body: JSON.stringify({ todo: editedTodo }),
           headers: {
             "Content-Type": "application/json",
           },
         });
-  
+
         const json = await res.json();
         if (!json.acknowledged) {
           throw new Error("Failed to update todo.");
@@ -53,17 +54,17 @@ export default function Todo(props) {
     const handleInputChange = (event) => {
       setEditedTodo(event.target.value);
     };
-  
+
     const deleteTodo = async (todoId) => {
       try {
         setTodos((currentTodos) => {
           return currentTodos.filter((currentTodo) => currentTodo._id !== todoId);
         });
-  
-        const res = await fetch(`/api/todos/${todoId}`, {
+
+        const res = await fetch(`${backendUrl}/api/todos/${todoId}`, {
           method: "DELETE",
         });
-  
+
         const json = await res.json();
         if (!json.acknowledged) {
           throw new Error("Failed to delete todo.");
@@ -117,7 +118,7 @@ export default function Todo(props) {
             icon={<FaTrash />}
             isRound="true"
             colorScheme="red"
-            onClick={() => deleteTodo(todo._id)} 
+            onClick={() => deleteTodo(todo._id)}
           />
         </HStack>
       </VStack>
